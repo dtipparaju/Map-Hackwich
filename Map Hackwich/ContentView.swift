@@ -17,9 +17,14 @@ struct ContentView: View {
     )
     @StateObject var locationManager = LocationManager()
     @State private var userTrackingMode: MapUserTrackingMode = .follow
+    @State private var places = [Place(name: "Barrington High School", coordinate: CLLocationCoordinate2D(latitude: 42.15704, longitude: -88.14812))]
     var body: some View {
         VStack {
-            Map(coordinateRegion: $region, interactionModes: .all, showsUserLocation: true, userTrackingMode: $userTrackingMode)
+            Map(coordinateRegion: $region, interactionModes: .all, showsUserLocation: true, userTrackingMode: $userTrackingMode, annotationItems: places) { places in
+                MapAnnotation(coordinate: places.coordinate, anchorPoint: CGPoint(x: 0.5, y: 1.2)) {
+                    Marker(name: places.name)
+                }
+            }
         }
     }
 }
@@ -27,5 +32,30 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+    }
+}
+
+struct Place: Identifiable {
+    let id = UUID()
+    let name : String
+    let coordinate: CLLocationCoordinate2D
+}
+
+struct Marker: View {
+    var name: String
+    var body: some View{
+        ZStack{
+            VStack{
+                Spacer(minLength: 15)
+                Rectangle()
+                    .fill(Color.black)
+                    .frame(width: 30, height: 30, alignment: .center)
+                    .rotationEffect(.degrees(45.0))
+            }
+            Capsule()
+                .fill(Color.red)
+                .frame(width: 200, height: 30, alignment: .center)
+            Text(name)
+        }
     }
 }
